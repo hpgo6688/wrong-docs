@@ -1,7 +1,8 @@
 ---
 sidebar_position: 3
-title: 
+title: 前端基础-性能优化1
 ---
+
 ## 优化的指标
 
 1. `白屏时间` = 地址栏输入网址后回车 - 浏览器出现第一个元素
@@ -75,39 +76,65 @@ title:
 
 左边红线代表的是网络传输层面的过程，右边红线代表了服务器传输回字节后浏览器的各种事件状态，这个阶段包含了浏览器对文档的解析，DOM 树构建，布局，绘制等等。
 
-_1. prompt for unload_
+1. prompt for unload
 
 - navigationStart: 表示从上一个文档卸载结束时的 unix 时间戳，如果没有上一个文档，这个值将和 fetchStart 相等。
-  _2. 前一个网页卸载_
+
+2. 前一个网页卸载
+
 - unloadEventStart: 表示前一个网页（与当前页面同域）unload 的时间戳，如果无前一个网页 unload 或者前一个网页与当前页面不同域，则值为 0。
 - unloadEventEnd: 返回前一个页面 unload 时间绑定的回掉函数执行完毕的时间戳。
-  _3. 重定向_
+
+3. 重定向
+
 - redirectStart: 第一个 HTTP 重定向发生时的时间。有跳转且是同域名内的重定向才算，否则值为 0。
 - redirectEnd: 最后一个 HTTP 重定向完成时的时间。有跳转且是同域名内部的重定向才算，否则值为 0。
-  _4. 使用 HTTP 请求_
+
+4. 使用 HTTP 请求
+
 - fetchStart: 浏览器准备好使用 HTTP 请求抓取文档的时间，这发生在检查本地缓存之前。
-  _5. 域名解析_
+
+5. 域名解析
+
 - domainLookupStart/domainLookupEnd: DNS 域名查询开始/结束的时间，如果使用了本地缓存（即无 DNS 查询）或持久连接，则与 fetchStart 值相等
-  _6. tcp 链接_
+
+6. tcp 链接
+
 - connectStart: HTTP（TCP）开始/重新 建立连接的时间，如果是持久连接，则与 fetchStart 值相等。
-  _7. ssl 建立_
+
+7. ssl 建立
+
 - secureConnectionStart: HTTPS 连接开始的时间，如果不是安全连接，则值为 0。
 - connectEnd: HTTP（TCP） 完成建立连接的时间（完成握手），如果是持久连接，则与 fetchStart 值相等。
-  _8. 读取文档_
+
+8. 读取文档
+
 - requestStart: HTTP 请求读取真实文档开始的时间（完成建立连接），包括从本地读取缓存。
-  _9. 响应_
+
+9. 响应
+
 - responseStart: HTTP 开始接收响应的时间（获取到第一个字节），包括从本地读取缓存。
 - responseEnd: HTTP 响应全部接收完成的时间（获取到最后一个字节），包括从本地读取缓存。
-  _10. 解析 dom_
+
+10. 解析 dom
+
 - domLoading: 开始解析渲染 DOM 树的时间，此时 Document.readyState 变为 loading，并将抛出 readystatechange 相关事件。
-  _11. dom 可交互_
+
+11. dom 可交互
+
 - domInteractive: 完成解析 DOM 树的时间，Document.readyState 变为 interactive，并将抛出 readystatechange 相关事件，注意只是 DOM 树解析完成，这时候并没有开始加载网页内的资源。
-  _12. 页面内资源加载_
+
+12. 页面内资源加载
+
 - domContentLoadedEventStart: DOM 解析完成后，网页内资源加载开始的时间，在 DOMContentLoaded 事件抛出前发生。
 - domContentLoadedEventEnd: DOM 解析完成后，网页内资源加载完成的时间（如 JS 脚本加载执行完毕）。
-  _13. dom 树解析完成_
+
+13. dom 树解析完成
+
 - domComplete: DOM 树解析完成，且资源也准备就绪的时间，Document.readyState 变为 complete，并将抛出 readystatechange 相关事件。
-  _14. load 事件_
+
+14. load 事件
+
 - loadEventStart: load 事件发送给文档，也即 load 回调函数开始执行的时间。
 - loadEventEnd: load 事件的回调函数执行完毕的时间。
 
@@ -238,7 +265,7 @@ getPerfermanceTiming();
 
 <hr/>
 
-## 聊下性能计算
+### 聊下性能计算
 
 ```js
 // 计算加载时间
@@ -298,26 +325,26 @@ function getPerformanceTiming() {
 }
 ```
 
-## 聊下性能优化
+### 聊下性能优化
 
 **假设你对 performance API 很熟悉**
 
-- 减少重定向次数
-- DNS 查询时间：HTML5 Prefetch 预查询
-- TCP 连接: http1.1 开启 connect: keep-alive, http2.0， 如果可以的话 **http3.0 可以看本站另一篇文章**
-- 资源压缩：gzip、brotli、图片压缩、tree-shaking、console、CDN 移除
-- 资源整合：减少请求次数、减少网络请求，雪碧图（虽然 http2 提供了**多路复用**[多路复用代替了 HTTP1.x 的序列和阻塞机制，所有的相同域名请求都通过同一个 TCP 连接并发完成。在 HTTP1.x 中，并发多个请求需要多个 TCP 连接，浏览器为了控制资源会有 6-8 个 TCP 连接都限制,单个连接上可以并行交错的请求和响应，之间互不干扰,但是数量猛增，服务器要处理，多多少少也耗性能]的能力，而且现在还有使用的常见，比聊天表情，飞书也在用）
-- 资源加载：CDN、强缓存和协商缓存、按需加载
-- DOM 解析：自上而下，script 标签放在底部，css 放在上面，无论是 html 还是 css 的层级，应尽量少的解析，解析消耗性能
-- 渲染时候：回流和重绘、懒加载、虚拟列表
+1. 减少重定向次数
+2. DNS 查询时间：HTML5 Prefetch 预查询
+3. TCP 连接: http1.1 开启 connect: keep-alive, http2.0， 如果可以的话 **http3.0 可以看本站另一篇文章**
+4. 资源压缩：gzip、brotli、图片压缩、tree-shaking、console、CDN 移除
+5. 资源整合：减少请求次数、减少网络请求，雪碧图（虽然 http2 提供了**多路复用**[多路复用代替了 HTTP1.x 的序列和阻塞机制，所有的相同域名请求都通过同一个 TCP 连接并发完成。在 HTTP1.x 中，并发多个请求需要多个 TCP 连接，浏览器为了控制资源会有 6-8 个 TCP 连接都限制,单个连接上可以并行交错的请求和响应，之间互不干扰,但是数量猛增，服务器要处理，多多少少也耗性能]的能力，而且现在还有使用的常见，比聊天表情，飞书也在用）
+6. 资源加载：CDN、强缓存和协商缓存、按需加载
+7. DOM 解析：自上而下，script 标签放在底部，css 放在上面，无论是 html 还是 css 的层级，应尽量少的解析，解析消耗性能
+8. 渲染时候：回流和重绘、懒加载、虚拟列表
 
 ## 两个事例
 
 **飞书雪碧图**
 
-- 为什么拿飞书桌端数据来说（之前开发桌面端 Electron，扒拉过飞书应用包的数据)
+- `为什么拿飞书桌端数据来说（之前开发桌面端 Electron，扒拉过飞书应用包的数据)`
 
-<img src="http://t-blog-images.aijs.top/img/20220606170307.webp" width=200 style="object-fit:content"/>
+<img src="http://t-blog-images.aijs.top/img/20220606170307.webp" />
 
 **百度每个表情单独一个图**
 
@@ -327,7 +354,7 @@ function getPerformanceTiming() {
 
 **京东移动端 dns-prefetch**
 
-- 为什么拿京东数据来说（之前爬取过京东移动端数据开发 RN)
+- `为什么拿京东数据来说（之前爬取过京东移动端数据开发 RN)`
 
 ![](http://t-blog-images.aijs.top/img/20220606172316.webp)
 
@@ -368,13 +395,13 @@ function getPerformanceTiming() {
 </head>
 ```
 
-## performance 数据能干啥用？
+### performance 数据能干啥用？
 
 （开发者）熟悉 Chrome 开发者工具的朋友应该知道：在开发环境下，其实我们自己打开 Chrome 的开发者工具，切换到网络面板，就能很详细的看到网页性能相关的数据。
 
 （网站用户）但当我们需要统计分析用户打开我们网页时的性能如何时，我们将 performance 原始信息或通过简单计算后的信息 (如上面写到的 getPerformanceTiming()) 上传到服务器，配合其他信息（如 HTTP 请求头信息），就完美啦~
 
-## 来看下简书
+### 来看下简书
 
 - 链接 <a href="https://www.jianshu.com/p/464593cea4dc" target="_blank" >简书</a> ,打开控制台可以看到输出结果一个数组（**如果简书没将此日志去除**）
 - 简书代码
@@ -459,7 +486,7 @@ window.addEventListener('load', function () {
 });
 ```
 
-## 简书截图
+### 简书截图
 
 ![](http://t-blog-images.aijs.top/img/20220605112219.webp)
 
@@ -548,7 +575,7 @@ function fmt_sort_key(obj) {
 fmt_sort_key(timing);
 ```
 
-## 非无痕首次访问
+### 非无痕首次访问
 
 ```js
 const timing = {
@@ -614,7 +641,7 @@ var timingfmt = [
 
 **我们看下结果 2022-06-05 09:04，年月日时分都是一致的，我们只关心三位的毫秒数**
 
-## 非无痕第二次访问
+### 非无痕第二次访问
 
 ```js
 const timing2 = {
@@ -674,7 +701,7 @@ var timingfmt2 = [
 ];
 ```
 
-## 非无痕 f5 手动刷新
+### 非无痕 f5 手动刷新
 
 ```js
 var timing3 = {
@@ -736,7 +763,7 @@ var timingfmt3 = [
 ];
 ```
 
-## 无痕模式首次
+### 无痕模式首次
 
 ```js
 var timing4 = {
@@ -800,7 +827,7 @@ var timing4fmt = [
 ];
 ```
 
-## 无痕模式刷新
+### 无痕模式刷新
 
 ```js
 var timing5 = {
@@ -864,7 +891,7 @@ var timing5fmt = [
 ];
 ```
 
-## 无痕模式刷新 + disable-cache
+### 无痕模式刷新 + disable-cache
 
 ```js
 var timing6 = {
@@ -956,22 +983,13 @@ Referrer Policy: strict-origin-when-cross-origin
 
 ## 参考资料
 
-<a href="https://blog.csdn.net/z9061/article/details/101454438" target="_blank" >Web 性能优化-首屏和白屏时间</a>
-
-<a href="http://www.alloyteam.com/2015/09/explore-performance/" target="_blank" >初探 performance – 监控网页与程序性能</a>
-
-<a href="https://blog.csdn.net/abuanden/article/details/114530985" target="_blank" >简述浏览器渲染机制</a>
-
-<a href="https://baijiahao.baidu.com/s?id=1722369549920506968&wfr=spider&for=pc" target="_blank" >浅谈 DNS 缓存的作用和影响</a>
-
-<a href="https://www.jianshu.com/p/0f2158726daf" target="_blank" >TTFB</a>
-
-<a href="https://cn.bluehost.com/blog/?p=14093" target="_blank" >什么是网站 TTFB？以及 6 个优化 TTFB 的方法</a>
-
-<a href="https://developer.mozilla.org/zh-CN/docs/Web/API/Resource_Timing_API/Using_the_Resource_Timing_API" target="_blank" >Web 开发技术>Web API 接口参考>Resource Timing API>Using the Resource Timing API</a>
-
-<a href="https://developer.mozilla.org/zh-CN/docs/Web/Performance#%E5%90%84%E7%A7%8D%E6%9C%AF%E8%AF%AD" target="_blank" >Performance#各种术语</a>
-
-<a href="https://developer.chrome.com/docs/devtools/network/reference/?utm_source=devtools#timing" target="_blank" >View the timing breakdown of a request</a>
-
-<a href="https://developer.chrome.com/docs/devtools/network/reference/?utm_source=devtools#timing-explanation" target="_blank" >Timing breakdown phases explained</a>
+1. <a href="https://blog.csdn.net/z9061/article/details/101454438" target="_blank" >Web 性能优化-首屏和白屏时间</a>
+2. <a href="http://www.alloyteam.com/2015/09/explore-performance/" target="_blank" >初探 performance – 监控网页与程序性能</a>
+3. <a href="https://blog.csdn.net/abuanden/article/details/114530985" target="_blank" >简述浏览器渲染机制</a>
+4. <a href="https://baijiahao.baidu.com/s?id=1722369549920506968&wfr=spider&for=pc" target="_blank" >浅谈 DNS 缓存的作用和影响</a>
+5. <a href="https://www.jianshu.com/p/0f2158726daf" target="_blank" >TTFB</a>
+6. <a href="https://cn.bluehost.com/blog/?p=14093" target="_blank" >什么是网站 TTFB？以及 6 个优化 TTFB 的方法</a>
+7. <a href="https://developer.mozilla.org/zh-CN/docs/Web/API/Resource_Timing_API/Using_the_Resource_Timing_API" target="_blank" >Web 开发技术>Web API 接口参考>Resource Timing API>Using the Resource Timing API</a>
+8. <a href="https://developer.mozilla.org/zh-CN/docs/Web/Performance#%E5%90%84%E7%A7%8D%E6%9C%AF%E8%AF%AD" target="_blank" >Performance#各种术语</a>
+9. <a href="https://developer.chrome.com/docs/devtools/network/reference/?utm_source=devtools#timing" target="_blank" >View the timing breakdown of a request</a>
+10. <a href="https://developer.chrome.com/docs/devtools/network/reference/?utm_source=devtools#timing-explanation" target="_blank" >Timing breakdown phases explained</a>
