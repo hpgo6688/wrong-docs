@@ -78,6 +78,12 @@ const config: Config = {
           position: 'left',
           label: 'React',
         },
+        {
+          type: 'docSidebar',
+          sidebarId: 'mianshiSidebar',
+          position: 'left',
+          label: '面试',
+        },
         // { to: '/blog', label: 'Blog', position: 'left' },
         // {
         //   href: 'https://github.com/facebook/docusaurus',
