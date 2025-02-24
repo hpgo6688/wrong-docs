@@ -74,12 +74,6 @@ const config: Config = {
         },
         {
           type: 'docSidebar',
-          sidebarId: 'reactSidebar',
-          position: 'left',
-          label: 'React',
-        },
-        {
-          type: 'docSidebar',
           sidebarId: 'mianshiSidebar',
           position: 'left',
           label: '面试',

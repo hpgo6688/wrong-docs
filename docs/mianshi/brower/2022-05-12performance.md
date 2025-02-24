@@ -1,6 +1,6 @@
 ---
 sidebar_position: 3
-title: 前端基础-性能优化1
+title: 前端基础-性能优化1 ⚡️
 ---
 
 ## 优化的指标
