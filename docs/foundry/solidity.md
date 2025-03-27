@@ -372,3 +372,111 @@ function deposit() external payable {
 ```
 
 对于 `receive` 和 `fallback` 函数，如果希望它们接收以太币，也必须标记为 `payable` 。否则，任何发送以太币的尝试都会导致交易回滚。
+
+## 理解继承
+
+> 对于多重继承，必须在 override 关键字后明确指定定义同一函数的最多派生基类合约。 换句话说，您必须指定所有定义同一函数的基类合约， 并且还没有被另一个基类合约重写（在继承图的某个路径上）。 此外，如果一个合约从多个（不相关的）基类合约上继承了同一个函数，必须明确地重写它。
+>  
+> 如果函数被定义在一个共同的基类合约中， 或者在一个共同的基类合约中有一个独特的函数已经重写了所有其他的函数， 则不需要明确的函数重写指定符。
+>
+> 怎么理解
+
+在 Solidity 中，多重继承可能会导致函数冲突，因此需要使用 `override` 关键字来明确指定哪个基类的实现应该被使用。以下是对这种机制的详细解释：
+
+1. **明确指定基类**：
+   - 当一个函数在多个基类中被定义时，你必须在 `override` 关键字后列出所有相关的基类。这是为了明确指定你希望使用哪些基类的实现。
+
+2. **继承路径上的重写**：
+   - 如果一个基类合约中的函数已经被另一个基类合约重写，那么在继承图中，这个函数的实现已经被确定，通常不需要再次明确指定。
+
+3. **不相关的基类**：
+   - 如果从不同的（不相关的）基类继承了同一个函数，必须在派生合约中显式重写这个函数，以避免冲突。
+
+4. **共同基类的情况**：
+   - 如果一个函数在一个共同的基类中已经被重写，并且这个重写版本唯一地覆盖了其他版本，那么不需要在派生合约中再次重写。
+
+这种机制确保了函数调用的明确性和继承关系的可预测性，防止了由于多重继承而导致的模糊和冲突。
+
+## 示例代码
+
+当然，这里有一个示例代码，展示了如何在 Solidity 中处理多重继承和 `override` ：
+
+```solidity
+// 基类合约 A
+contract A {
+    function foo() public virtual returns (string memory) {
+        return "A";
+    }
+}
+
+// 基类合约 B
+contract B {
+    function foo() public virtual returns (string memory) {
+        return "B";
+    }
+}
+
+// 合约 C 继承自 A 和 B
+contract C is A, B {
+    // 必须明确指定要重写 A 和 B 中的 foo 函数
+    function foo() public override(A, B) returns (string memory) {
+        return super.foo(); // 可以选择调用 super 来调用特定的实现
+    }
+}
+
+// 合约 D 继承自 A
+contract D is A {
+    // 由于只有一个基类 A 定义了 foo，所以不需要明确指定
+    function foo() public override returns (string memory) {
+        return "D";
+    }
+}
+
+// 合约 E 继承自 C 和 D
+contract E is C, D {
+    // 必须明确指定要重写 C 和 D 中的 foo 函数
+    function foo() public override(C, D) returns (string memory) {
+        return "E";
+    }
+}
+```
+
+在这个例子中：
+
+* 合约 `C` 继承了 `A` 和 `B`，所以在重写 `foo` 时必须指定 `override(A, B)`。
+* 合约 `D` 继承了 `A`，所以只需 `override`。
+* 合约 `E` 继承了 `C` 和 `D`，所以在重写 `foo` 时必须指定 `override(C, D)`。
+
+这种方式确保了函数调用的明确性，避免了多重继承导致的冲突。
+
+## 继承自多个合约的同名方法，必须重写吗？
+
+是的，当一个合约继承自多个合约且这些合约中有同名方法时，必须在派生合约中重写该方法。这是为了避免函数冲突，并明确指定要使用哪个基类的实现。
+
+以下是一个示例：
+
+```solidity
+// 基类合约 A
+contract A {
+    function foo() public virtual returns (string memory) {
+        return "A";
+    }
+}
+
+// 基类合约 B
+contract B {
+    function foo() public virtual returns (string memory) {
+        return "B";
+    }
+}
+
+// 合约 C 继承自 A 和 B
+contract C is A, B {
+    // 必须重写 foo 方法，并在 override 后指定 A 和 B
+    function foo() public override(A, B) returns (string memory) {
+        return super.foo(); // 可以选择调用 super 来调用特定的实现
+    }
+}
+```
+
+在这个例子中， `C` 继承了 `A` 和 `B` ，因为 `A` 和 `B` 都定义了 `foo` ，所以 `C` 必须重写 `foo` ，并在 `override` 后指定 `A` 和 `B` 。这样可以确保继承关系的明确性和函数调用的正确性。
