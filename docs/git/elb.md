@@ -108,3 +108,18 @@ https://docs.aws.amazon.com/zh_cn/elasticloadbalancing/latest/classic/ssl-server
 https://alejandrocelaya.blog/2016/08/16/setup-a-lets-encrypt-certificate-in-a-aws-elastic-load-balancer/
 
 https://docs.aws.amazon.com/elasticloadbalancing/latest/classic/elb-update-ssl-cert.html#us-update-lb-SSLcert-cli
+
+## certbot 为ELB 的默认域名 xxxxx.elb.ap-southeast-1.amazonaws.com 生成证书
+
+Certbot 主要用于生成和管理 Let's Encrypt 证书，但它通常用于自定义域名，而不是 ELB 的默认域名。默认的 ELB 域名是由 AWS 管理的，因此不能通过 Certbot 为其直接生成证书。
+
+如果需要为 ELB 使用 HTTPS，通常的做法是：
+
+1. **使用自定义域名**：
+   - 为你的 ELB 配置一个自定义域名（例如，通过 Route 53）。
+   - 使用 Certbot 为该自定义域名生成证书。
+
+2. **使用 AWS Certificate Manager (ACM)**：
+   - 如果你使用的是自定义域名，建议通过 ACM 申请证书，并将其绑定到 ELB。
+
+如果没有自定义域名，AWS 提供的默认 ELB 域名不支持通过 Certbot 直接生成证书。建议考虑使用自定义域名以实现 HTTPS。
