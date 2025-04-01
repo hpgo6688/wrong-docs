@@ -1,3 +1,22 @@
+## ACM 不支持为 ELB 的默认域名
+
+是的，ACM 不支持为 ELB 的默认域名（如 `*.elb.amazonaws.com` ）直接获取证书。你需要使用自己的自定义域名。以下是步骤：
+
+1. **使用自定义域名**：
+   - 确保你拥有一个自定义域名。
+   - 在你的 DNS 提供商处，将该域名的 CNAME 记录指向 ELB 的 DNS 名称。
+
+2. **获取证书**：
+   - 使用 Certbot 通过 DNS-01 验证获取该自定义域名的证书。
+
+3. **上传证书到 ACM**：
+   - 将 Certbot 获取的证书上传到 AWS ACM。
+
+4. **配置 ELB**：
+   - 在 ELB 的监听器中使用上传到 ACM 的证书。
+
+通过这种方式，你可以使用自定义域名来配置 ELB 的 SSL/TLS。
+
 ## AWS 直接通过域名打到 elb上？
 
 AWS 允许你通过自定义域名指向 ELB，但不直接支持通过 ELB 提供的默认域名（如 `nlb-ops-1e44c19db954fff3.elb.ap-southeast-1.amazonaws.com` ）获取公共证书。要使用自定义域名指向 ELB，步骤如下：
@@ -85,3 +104,7 @@ openssl req -new -key private.key -out certificate.csr -subj "/C=US/ST=State/L=C
 https://docs.aws.amazon.com/zh_cn/elasticloadbalancing/latest/classic/ssl-server-cert.html
 
 https://docs.aws.amazon.com/zh_cn/elasticloadbalancing/latest/classic/ssl-server-cert.html#import-certificate-iam
+
+https://alejandrocelaya.blog/2016/08/16/setup-a-lets-encrypt-certificate-in-a-aws-elastic-load-balancer/
+
+https://docs.aws.amazon.com/elasticloadbalancing/latest/classic/elb-update-ssl-cert.html#us-update-lb-SSLcert-cli
