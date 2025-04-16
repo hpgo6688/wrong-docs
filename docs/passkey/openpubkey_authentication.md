@@ -15,6 +15,8 @@ Passkey is a new authentication standard that allows users to log in to applicat
 ```mermaid
 
 sequenceDiagram
+ Note left of User: JWS
+ rect rgba(225, 98, 35, 0.9)
     participant User as User (Browser)
     participant WebApp as WebApp (Server)
 
@@ -36,13 +38,10 @@ sequenceDiagram
 
     User->>WebApp: Send PKToken to initialize mfa-cosign
     WebApp->>User: initialize mfa-cosign
-    rect rgba(225, 98, 35, 0.9)
-    User<<->>OP: split line no related
-    User<<->>OP: split line no related
-    User<<->>OP: split line no related
     end
-    rect rgba(61, 35, 225, 0.9)
+
     Note left of User: Passkey Register
+    rect rgba(61, 35, 225, 0.9)
     alt not-registered
     User->>WebApp: Begin passkey registration
     WebApp->>User: Generate challenge
