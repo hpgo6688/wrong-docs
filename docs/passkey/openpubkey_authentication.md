@@ -27,14 +27,14 @@ sequenceDiagram
     WebApp->>User: Redirect to OP for registration with OpenPubkey
 
     User->>OP: authenticate with OpenID
-    Note right of User: nonce = crypto.SHA3_256(upk, alg, rz, typ)
+    Note right of User: nonce = crypto.SHA3_256(upk, alg, rz:  random(), typ)
     destroy OP
     OP-->>User: Redirect to WebApp callback with ID Token
     Note left of OP: OP builds an ID Token containing claims about Alice.<br/>ID Token = {iss, sub, aud, exp, iat, nonce}
     activate User
     User->>User: Sign ID Token with usk, get PKToken
     deactivate User
-    Note right of User: sign(usk, jwsPayload | {alg: "ES256", upk: ephemeralPubKey, "rz": random(), "typ": "CIC})s
+    Note right of User: sign(usk, jwsPayload | {alg: "ES256", upk: ephemeralPubKey, "rz": nonce.rz, "typ": "CIC})s
 
     User->>WebApp: Send PKToken to initialize mfa-cosign
     WebApp->>User: initialize mfa-cosign
@@ -58,11 +58,12 @@ sequenceDiagram
     Authenticator->>User: AssertionResponse
     User->>WebApp: Finish login
     WebApp->>User: login response
-    rect rgba(84, 225, 18, 0.5)
+    
     Note left of User: Diffie-Hellman
-    end
-
+ 
+    rect rgba(84, 225, 18, 0.5)
     WebApp<<->>User: x25519 Diffie-Hellman
+    end
 ```
 
 ## Public Key Token (PKToken)
@@ -118,3 +119,33 @@ OPs (OpenID Providers) issue ID Tokens by signing them. As required by OpenID Co
 | Microsoft | https://login.microsoftonline.com/common/.well-known/openid-configuration | https://login.microsoftonline.com/common/discovery/v2.0/keys  |? days |
 
 OpenPubkey relies on verifiers being able to check the OP's signature on the ID Token's contained in the PK Token. For many use cases, such as authenticating access to a server, a user can request a new ID Token after the OP rotates their keys. Such use cases do not require that PK Tokens remain verifiable beyond an OP key rotation.
+
+## google + jws +passkey +Diffie-Hellman 是不是有点多此一举了?
+
+> 因为
+> 1. google + passkey = mfa , 
+> 2. google + passkey + Diffie-Hellman   = mfa + 签名/验签  + 密文传输, shareKey支持对称加密。 我们仅用了加签/验签（没有完全发挥出来）
+> 3. google + passkey + jws = mfa + 签名/验签, 
+> 4. google + jws + passkey + Diffie-Hellman = mfa + 签名/验签*2 + 密文传输
+> 5. 三种曲线：jws ECDS , Diffie-Hellman 是x25519, shareKey转化的签名使用 ed25519
+
+确实，结合多种安全机制时，可能会导致复杂性增加，而不一定带来显著的安全性提升。让我们分析一下每个组合：
+
+1. **Google + Passkey**: 
+   - 提供多因素认证（MFA），确保用户身份。
+
+2. **Google + Passkey + Diffie-Hellman**: 
+   - 提供 MFA，并通过 Diffie-Hellman 进行密钥交换，确保通信的机密性。
+
+3. **Google + Passkey + JWS**: 
+   - 提供 MFA，并使用 JWS 进行数据签名和验证，确保数据的完整性和真实性。
+
+4. **Google + JWS + Passkey + Diffie-Hellman**: 
+   - 提供 MFA，使用 JWS 确保数据完整性，并通过 Diffie-Hellman 确保通信机密性。
+
+### 复杂性 vs. 实用性
+
+* **过度复杂**: 组合过多会增加实现和维护的复杂性。
+* **需求导向**: 应根据具体的安全需求选择合适的组合，而不是简单地叠加多种机制。
+
+在大多数情况下，合理选择和配置一种或两种机制就足够了。确保每个机制的实现是安全可靠的，通常比叠加多个机制更为重要。
