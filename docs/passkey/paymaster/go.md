@@ -159,3 +159,18 @@ func mergeMaps(m1, m2 map[string]interface{}) map[string]interface{} {
 }
 
 ```
+
+01. 指针：*int
+02. 切片：[]int
+03. 数组：[n]int
+04. 通道：chan int
+05. 映射：map[string]int
+06. 函数：func(int) int
+07. 指向切片的指针：*[]int
+08. 切片的切片：[][]int
+09. 数组的指针：*[n]int
+10. 切片的数组：[n][]int
+11. 映射的切片：[]map[string]int
+12. 通道的映射：map[string]chan int
+13. 函数返回切片：func() []int
+14. 函数接收和返回指针：func(*int) *int
