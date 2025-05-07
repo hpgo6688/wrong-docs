@@ -159,20 +159,3 @@ func mergeMaps(m1, m2 map[string]interface{}) map[string]interface{} {
 }
 
 ```
-
-01. 指针：*int
-02. 切片：[]int
-03. 数组：[n]int
-04. 通道：chan int 双向通道，可以发送和接收整数。
-06. 通道：<-chan int: 只接收通道，只能从中接收整数。
-07. 通道：chan<- int: 只发送通道，只能向其中发送整数。
-08. 映射：map[string]int
-09. 函数：func(int) int
-10. 指向切片的指针：*[]int
-11. 切片的切片：[][]int
-12. 数组的指针：*[n]int
-13. 切片的数组：[n][]int
-14. 映射的切片：[]map[string]int
-15. 通道的映射：map[string]chan int
-16. 函数返回切片：func() []int
-17. 函数接收和返回指针：func(*int) *int
