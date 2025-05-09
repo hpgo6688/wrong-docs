@@ -199,3 +199,29 @@
 
 })();
 ```
+
+e.clientX, Math.max(newWidth, MIN_WIDTH) 301 303
+e.clientX, Math.max(newWidth, MIN_WIDTH) 302 304
+e.clientX, Math.max(newWidth, MIN_WIDTH) 303 305
+e.clientX, Math.max(newWidth, MIN_WIDTH) 237 241
+e.clientX, Math.max(newWidth, MIN_WIDTH) 238 242
+
+e.clientX, Math.max(newWidth, MIN_WIDTH) 239 243
+e.clientX, Math.max(newWidth, MIN_WIDTH) 240 244
+e.clientX, Math.max(newWidth, MIN_WIDTH) 241 245
+e.clientX, Math.max(newWidth, MIN_WIDTH) 242 246
+
+e.clientX, Math.max(newWidth, MIN_WIDTH) 243 247
+e.clientX, Math.max(newWidth, MIN_WIDTH) 244 248
+e.clientX, Math.max(newWidth, MIN_WIDTH) 245 249
+
+e.clientX, Math.max(newWidth, MIN_WIDTH) 246 250
+e.clientX, Math.max(newWidth, MIN_WIDTH) 247 251
+e.clientX, Math.max(newWidth, MIN_WIDTH) 248 252
+e.clientX, Math.max(newWidth, MIN_WIDTH) 249 253
+e.clientX, Math.max(newWidth, MIN_WIDTH) 250 254
+e.clientX, Math.max(newWidth, MIN_WIDTH) 251 255
+
+e.clientX, Math.max(newWidth, MIN_WIDTH) 252 256
+
+e.clientX, Math.max(newWidth, MIN_WIDTH) 253 257
