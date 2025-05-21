@@ -1,5 +1,108 @@
 ## https://passkeys.foundation 这家是如何实现私钥保护的？
 
+```js
+
+// passkey_mpc_utils.js
+
+// ======= 工具函数 =======
+
+const isValidUUID = t => typeof t === "string" && /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(t);
+
+const uuidToBytes = (uuid) => {
+    if (!isValidUUID(uuid)) throw new TypeError("Invalid UUID");
+    const parts = uuid.split("-");
+    const bytes = new Uint8Array(16);
+    let offset = 0;
+    for (const part of parts) {
+        for (let i = 0; i < part.length; i += 2) {
+            bytes[offset++] = parseInt(part.slice(i, i + 2), 16);
+        }
+    }
+    return bytes;
+};
+
+const byteToHex = [];
+for (let i = 0; i < 256; ++i) byteToHex.push((i + 256).toString(16).slice(1));
+
+const bytesToUUID = (bytes) => {
+    return (
+        byteToHex[bytes[0]] + byteToHex[bytes[1]] + byteToHex[bytes[2]] + byteToHex[bytes[3]] + "-" +
+        byteToHex[bytes[4]] + byteToHex[bytes[5]] + "-" +
+        byteToHex[bytes[6]] + byteToHex[bytes[7]] + "-" +
+        byteToHex[bytes[8]] + byteToHex[bytes[9]] + "-" +
+        byteToHex[bytes[10]] + byteToHex[bytes[11]] + byteToHex[bytes[12]] + byteToHex[bytes[13]] + byteToHex[bytes[14]] + byteToHex[bytes[15]]
+    );
+};
+
+// ======= 密钥生成 =======
+
+function generateEncryptionKey(length = 32) {
+    return crypto.getRandomValues(new Uint8Array(length));
+}
+
+// ======= userHandle 构造与解析 =======
+
+const FHT_MARKER = 0x01; // 自定义类型标识
+
+function createUserHandle({ userId, encryptionKey }) {
+    const typeByte = new Uint8Array([FHT_MARKER]);
+    const userIdBytes = uuidToBytes(userId);
+
+    const totalLength = 1 + userIdBytes.length + encryptionKey.length;
+    const result = new Uint8Array(totalLength);
+
+    result.set(typeByte, 0);
+    result.set(userIdBytes, 1);
+    result.set(encryptionKey, 1 + userIdBytes.length);
+
+    return result.buffer;
+}
+
+function parseUserHandle(buffer) {
+    const view = new Uint8Array(buffer);
+    const userIdBytes = view.slice(1, 17);
+    const encryptionKey = view.slice(17);
+    return {
+        userId: bytesToUUID(userIdBytes),
+        encryptionKey
+    };
+}
+
+// ======= 示例执行流程 =======
+
+function demo() {
+    const userId = "550e8400-e29b-41d4-a716-446655440000"; // 示例 UUID
+    const encryptionKey = generateEncryptionKey();
+
+    const userHandleBuffer = createUserHandle({ userId, encryptionKey });
+    console.log("UserHandle (hex):", Buffer.from(userHandleBuffer).toString("hex"));
+
+    const parsed = parseUserHandle(userHandleBuffer);
+    console.log("Parsed User ID:", parsed.userId);
+    console.log("Parsed Encryption Key:", Buffer.from(parsed.encryptionKey).toString("hex"));
+}
+
+// ======= 导出 =======
+
+module.exports = {
+    isValidUUID,
+    uuidToBytes,
+    bytesToUUID,
+    generateEncryptionKey,
+    createUserHandle,
+    parseUserHandle,
+    demo
+};
+
+// 如果直接运行此文件，则执行 demo()
+if (require.main === module) {
+    demo();
+}
+
+
+```
+
+## 以下内容可能错误
 
 根据搜索结果，Passkeys Foundation（passkeys.foundation）通过以下技术手段实现私钥保护，结合了生物识别技术、本地化存储和加密机制，确保用户私钥的安全性：
 
