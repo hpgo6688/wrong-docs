@@ -1392,3 +1392,91 @@ View type: ModifiedContent<ModifiedContent<TrainCar, _PaddingLayout>, _Backgroun
 ---
 
 需要我帮你写一个小工具 `ViewInspector` Demo（一个能真实查看 SwiftUI 树的第三方库）来做这个分析吗？或者你有其他视图组合想要解析也可以告诉我！
+
+# extension 是做什么的
+
+
+在 Swift 中，`extension` 是用来 **扩展一个已有类型的功能** 的机制，而 **不需要访问或修改这个类型的源代码**。你可以使用 `extension` 来：
+
+* 添加新的方法（如你例子中所示）
+* 添加计算属性（不能添加存储属性）
+* 添加新的构造器（条件允许时）
+* 遵守协议
+* 对已有类型进行分类（通过嵌套类型）
+
+---
+
+### 你这段代码的意思
+
+```swift
+extension PublicKeyCredential {
+    func getAll() -> [PublicKeyCredentialSource]? {
+        return try? db.loadAll().get()
+    }
+
+    func deleteAll(_ aaguid: String) -> Result<Void, Error> {
+        do {
+            try db.deleteAll(aaguid)
+            return .success(())
+        } catch {
+            return .failure(error)
+        }
+    }
+
+    func deleteAll() -> Result<Void, Error> {
+        do {
+            try db.deleteAll()
+            return .success(())
+        } catch {
+            return .failure(error)
+        }
+    }
+}
+```
+
+这是给 `WebAuthn` 模块中的 `PublicKeyCredential` 类型添加了一些新方法：
+
+* `getAll()`：获取所有的凭证。
+* `deleteAll(_:)`：根据 AAGUID 删除对应凭证。
+* `deleteAll()`：删除所有凭证。
+
+这些方法原来并不存在于 `PublicKeyCredential` 中，但通过 `extension` 的方式添加后，就可以像调用原生方法一样调用这些新功能了。
+
+---
+
+### 举个类比 🌰
+
+假设你有个类：
+
+```swift
+class Dog {
+    var name: String
+    init(name: String) { self.name = name }
+}
+```
+
+你后来想给 `Dog` 增加一个功能，比如叫声：
+
+```swift
+extension Dog {
+    func bark() {
+        print("\(name) says woof!")
+    }
+}
+```
+
+你就可以这样用：
+
+```swift
+let dog = Dog(name: "Buddy")
+dog.bark() // 输出：Buddy says woof!
+```
+
+---
+
+### 总结
+
+* `extension` 是 Swift 提供的“**非侵入式地增强现有类型功能**”的语法。
+* 非常适合给框架里的类、结构体等添加功能，尤其当你不能或不想修改它们原始定义的时候。
+
+是否需要我帮你把这个扩展接入一个 SwiftUI WebAuthn 示例里？
