@@ -99,3 +99,94 @@ sudo certbot certonly --webroot -w /var/www/aijs -d aijs.top -d www.aijs.top
 nginx: the configuration file /etc/nginx/nginx.conf syntax is ok
 nginx: configuration file /etc/nginx/nginx.conf test is successful
 [root@iZuf69eqna2a8jvegix7liZ acme-challenge]# sudo systemctl reload nginx
+
+
+
+# pm2
+
+要让 Node.js 应用在后台运行，你可以使用以下方法：
+
+### 使用 `nohup`
+
+```bash
+nohup node index.js > output.log 2>&1 &
+```
+
+- `output.log` 用于保存输出日志。
+- `2>&1` 将错误输出重定向到同一个日志文件。
+
+### 使用 `pm2`
+
+`pm2` 是一个强大的进程管理工具，适合在生产环境中使用。
+
+1. 安装 `pm2`：
+
+   ```bash
+   npm install -g pm2
+   ```
+
+2. 启动应用：
+
+   ```bash
+   pm2 start index.js
+   ```
+
+3. 查看运行状态：
+
+   ```bash
+   pm2 status
+   ```
+
+4. 停止应用：
+
+   ```bash
+   pm2 stop index.js
+   ```
+
+5. 重启应用：
+
+   ```bash
+   pm2 restart index.js
+   ```
+
+6. 保存进程列表以便重启后自动启动：
+
+   ```bash
+   pm2 save
+   ```
+
+7. 设置开机自启动：
+
+   ```bash
+   pm2 startup
+   ```
+
+### 使用 `forever`
+
+`forever` 也是一个简单的进程管理工具。
+
+1. 安装 `forever`：
+
+   ```bash
+   npm install -g forever
+   ```
+
+2. 启动应用：
+
+   ```bash
+   forever start index.js
+   ```
+
+3. 查看运行中的应用：
+
+   ```bash
+   forever list
+   ```
+
+4. 停止应用：
+
+   ```bash
+   forever stop index.js
+   ```
+
+这些工具都能帮助你在后台运行 Node.js 应用并进行管理。
