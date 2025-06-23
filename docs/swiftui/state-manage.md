@@ -101,3 +101,95 @@ struct MyView: View {
 ```
 
 这些工具共同构成了 SwiftUI 状态管理的基础，帮助开发者高效地构建响应式用户界面。
+
+# 子视图需要    @Binding 声明，然后可以接受父视图数据？
+是的，子视图需要用 `@Binding` 来声明一个属性，以便接收和修改来自父视图的数据。这样，子视图可以与父视图共享状态，并且对子视图中数据的更改会自动反映到父视图中。
+
+### 示例
+
+```swift
+struct ParentView: View {
+    @State private var isOn: Bool = false
+
+    var body: some View {
+        ChildView(isOn: $isOn) // 使用 $ 传递绑定
+    }
+}
+
+struct ChildView: View {
+    @Binding var isOn: Bool // 声明 @Binding 属性
+
+    var body: some View {
+        Toggle("Switch", isOn: $isOn) // 使用绑定
+    }
+}
+```
+
+### 说明
+
+- **父视图**：使用 `@State` 来管理状态，并通过 `$` 符号将状态的绑定传递给子视图。
+- **子视图**：使用 `@Binding` 来声明接收的绑定，从而可以读取和修改父视图的状态。
+
+这种方式确保了父子视图之间的状态同步和数据共享。
+
+#  @ObservedObject 传递数据，不用$?
+
+```swift
+struct BookView: View {
+    @ObservedObject var book: Book
+    
+    var body: some View {
+        BookEditView(book: book)
+    }
+}
+
+struct BookEditView: View {
+    @ObservedObject var book: Book
+
+    // ...
+}
+```
+在你的示例中，`BookView` 和 `BookEditView` 都使用 `@ObservedObject` 来接收一个 `Book` 对象。这种情况下不需要使用 `$`，因为 `@ObservedObject` 用于观察对象的状态变化，而不是绑定单个值。
+
+### 解释
+
+- **@ObservedObject**：用于观察一个遵循 `ObservableObject` 协议的对象。当对象的属性发生变化时，视图会自动刷新。
+
+- **不需要 `$`**：`@ObservedObject` 直接传递整个对象，而不是一个绑定，所以不需要使用 `$` 符号。
+
+### 示例
+
+```swift
+class Book: ObservableObject {
+    @Published var title: String
+    @Published var author: String
+
+    init(title: String, author: String) {
+        self.title = title
+        self.author = author
+    }
+}
+
+struct BookView: View {
+    @ObservedObject var book: Book
+    
+    var body: some View {
+        BookEditView(book: book) // 直接传递对象
+    }
+}
+
+struct BookEditView: View {
+    @ObservedObject var book: Book
+
+    var body: some View {
+        TextField("Title", text: $book.title) // 使用 $ 访问 @Published 的绑定
+        TextField("Author", text: $book.author)
+    }
+}
+```
+
+### 关键点
+
+- `@ObservedObject` 适用于整个对象。
+- 使用 `$` 符号访问 `@Published` 属性的绑定，以便在界面中进行绑定操作（如 `TextField`）。
+- `Book` 类需要遵循 `ObservableObject` 协议，并使用 `@Published` 标记需要观察的属性。
