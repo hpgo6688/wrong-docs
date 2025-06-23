@@ -93,14 +93,70 @@ sudo certbot certonly --webroot -w /var/www/aijs -d aijs.top -d www.aijs.top
 
 # nginx
 
-
+```
 [root@iZuf69eqna2a8jvegix7liZ acme-challenge]# vim /etc/nginx/conf.d/aijs.conf
 [root@iZuf69eqna2a8jvegix7liZ acme-challenge]# sudo nginx -t
 nginx: the configuration file /etc/nginx/nginx.conf syntax is ok
 nginx: configuration file /etc/nginx/nginx.conf test is successful
 [root@iZuf69eqna2a8jvegix7liZ acme-challenge]# sudo systemctl reload nginx
+```
+![alt text](image-1.png)   
 
 
+```
+server {
+    listen 80;
+    server_name aijs.top www.aijs.top;
+
+    # 给 certbot 用的路径
+    location /.well-known/acme-challenge/ {
+        root /var/www/aijs;
+    }
+
+    # 所有其他请求代理给 Express 应用
+    # location / {
+    #    proxy_pass http://127.0.0.1:6000;
+    #    proxy_set_header Host $host;
+    #    proxy_set_header X-Real-IP $remote_addr;
+    # }
+    location / {
+        return 301 https://$host$request_uri;
+    }
+}
+
+
+server {
+    listen 443 ssl;
+    server_name aijs.top www.aijs.top;
+
+    ssl_certificate /etc/letsencrypt/live/aijs.top/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/aijs.top/privkey.pem;
+
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_ciphers HIGH:!aNULL:!MD5;
+
+    location / {
+        proxy_pass http://127.0.0.1:6000;  # 你的 Express 端口
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+    }
+}
+
+# 配置 for wallet.aijs.top 这里由于bundle id 与域名强绑定，所以又加了一个域名
+server {
+    listen 443 ssl;
+    server_name wallet.aijs.top;
+
+    ssl_certificate /etc/letsencrypt/live/aijs.top/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/aijs.top/privkey.pem;
+
+    location / {
+        proxy_pass http://127.0.0.1:6000; # 如果是另一个服务可以换端口
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+    }
+}
+```
 
 # pm2
 
@@ -136,7 +192,7 @@ nohup node index.js > output.log 2>&1 &
    ```bash
    pm2 status
    ```
-
+![alt text](image-2.png)
 4. 停止应用：
 
    ```bash
@@ -190,7 +246,7 @@ nohup node index.js > output.log 2>&1 &
    ```
 
 这些工具都能帮助你在后台运行 Node.js 应用并进行管理。
-   
+
 # apple-app-site-association 刷新
 
 明白了，你访问的是 Apple 的 CDN 地址（`https://app-site-association.cdn-apple.com`），这个域名是 Apple 用来托管 **App Site Association（ASA）文件** 的公共 CDN 服务，用于 Apple 的 Universal Links、Sign in with Apple、WebAuthn、Passkeys 等功能。
@@ -240,6 +296,8 @@ https://app-site-association.cdn-apple.com/a/v1/wallet.aijs.top
 
 ### 3. **等待自动刷新**
 
+https://developer.apple.com/documentation/bundleresources/entitlements/com.apple.developer.associated-domains
+
 Apple 会周期性地刷新缓存（通常是 24 小时内），但这不保证立即生效。
 
 ---
@@ -280,3 +338,12 @@ curl -i https://wallet.aijs.top/.well-known/apple-app-site-association
 | 立即刷新 CDN 缓存   | ❌ 无法强制立即生效，但 Apple 会定期刷新 |
 
 如果你需要我帮你检查你的源站配置是否正确，也可以贴上 ASA 文件内容或源站 URL。
+
+
+# 测试
+
+![alt text](image-3.png)
+
+# 记录
+
+<video controls src="react-native-passkey.mp4" title="Title"></video>

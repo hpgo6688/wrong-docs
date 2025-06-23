@@ -1,1 +1,0 @@
-<video controls src="react-native-passkey.mp4" title="Title"></video>
