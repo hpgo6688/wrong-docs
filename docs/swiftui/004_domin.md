@@ -190,3 +190,93 @@ nohup node index.js > output.log 2>&1 &
    ```
 
 这些工具都能帮助你在后台运行 Node.js 应用并进行管理。
+   
+# apple-app-site-association 刷新
+
+明白了，你访问的是 Apple 的 CDN 地址（`https://app-site-association.cdn-apple.com`），这个域名是 Apple 用来托管 **App Site Association（ASA）文件** 的公共 CDN 服务，用于 Apple 的 Universal Links、Sign in with Apple、WebAuthn、Passkeys 等功能。
+
+例如你访问的这个地址：
+
+```
+https://app-site-association.cdn-apple.com/a/v1/wallet.aijs.top
+```
+
+是 Apple 自动从你的网站 `https://wallet.aijs.top/.well-known/apple-app-site-association` 拉取并缓存的副本。
+
+---
+
+## 🔍 为什么带参数的 URL 有响应，而不带参数的返回 Not Found？
+
+这是 Apple CDN 的一个 **已知行为**：
+
+- Apple CDN 会缓存你网站的 `apple-app-site-association` 文件。
+- 但它对 **无参数请求** 可能会返回 `404 Not Found`，尤其是在缓存未命中或文件未成功拉取时。
+- 而带有查询参数的请求（比如 `?foo`）可能会绕过某些 CDN 缓存策略，从而返回旧的或不同的内容。
+
+---
+
+## ✅ 如何让 Apple 更新缓存？
+
+你无法直接控制 `app-site-association.cdn-apple.com`，但可以通过以下方式**触发 Apple 更新缓存**：
+
+### 1. **确保你的服务器正确托管了 `.well-known/apple-app-site-association` 文件**
+
+- 路径：`https://wallet.aijs.top/.well-known/apple-app-site-association`
+- 要求：
+  - 必须是 HTTPS
+  - 不允许重定向
+  - 响应头必须设置正确的 `Content-Type`：
+    ```
+    Content-Type: application/json
+    ```
+
+### 2. **使用 Apple 的验证工具触发刷新**
+
+访问 Apple 的验证工具（适用于 Sign in with Apple 和 Universal Links）：
+
+- [https://developer.apple.com/account/resources/identifiers/list/serviceId](https://developer.apple.com/account/resources/identifiers/list/serviceId)
+
+在你的服务 ID 或 App ID 中，重新配置 Web credentials 或 Associated Domains，然后保存，这通常会触发 Apple 重新拉取你的 ASA 文件。
+
+### 3. **等待自动刷新**
+
+Apple 会周期性地刷新缓存（通常是 24 小时内），但这不保证立即生效。
+
+---
+
+## 🧪 你可以做的测试
+
+1. **检查你自己的服务器是否正确返回 ASA 文件**
+
+```bash
+curl -i https://wallet.aijs.top/.well-known/apple-app-site-association
+```
+
+确认：
+- 状态码是 200
+- 没有重定向
+- `Content-Type` 是 `application/json`
+- 返回内容是合法 JSON
+
+2. **修改内容后重新部署**
+
+如果你更新了 ASA 文件，确保部署成功后，再去 Apple 后台触发更新，或等待 CDN 缓存刷新。
+
+---
+
+## 🚫 注意
+
+你不能直接控制或清除 `https://app-site-association.cdn-apple.com` 的缓存，因为它是 Apple 的服务。但你可以通过确保源站配置正确 + 在 Apple 后台触发刷新，间接影响它的缓存更新。
+
+---
+
+📌 总结：
+
+| 操作                | 是否可以做                              |
+| ------------------- | --------------------------------------- |
+| 修改 CDN 内容       | ❌ 不可控（Apple 管理）                  |
+| 修改源站 ASA 文件   | ✅ 可控                                  |
+| 触发 Apple 重新拉取 | ✅ 可控（通过 Apple 后台或配置）         |
+| 立即刷新 CDN 缓存   | ❌ 无法强制立即生效，但 Apple 会定期刷新 |
+
+如果你需要我帮你检查你的源站配置是否正确，也可以贴上 ASA 文件内容或源站 URL。
