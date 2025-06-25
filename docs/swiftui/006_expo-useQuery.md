@@ -1,4 +1,4 @@
-# doc
+# useQuery
 https://tanstack.com/query/v4/docs/framework/react/react-native
 
 ```tsx
