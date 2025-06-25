@@ -304,10 +304,10 @@ Swift 的类型系统更强调安全性和性能（如值类型、严格的 `Opt
 
 
 
-| 类型                                   | Rust | Go   | Swift | TypeScript | kt  | python | dart |
-| -------------------------------------- | ---- | ---- | ----- | ---------- | --- | ------ | ---- |
-| 基本数据类型(数值，布尔，字符串，空值) | 小写 | 小写 | 大写  | 小写       |     |        |      |
-| 符合数据类型                           | 大写 | 小写 | 大写  | 小写       |     |        |      |
+| 类型                                   | Rust           | Go             | Swift          | TypeScript     | kt  | python | dart |
+| -------------------------------------- | -------------- | -------------- | -------------- | -------------- | --- | ------ | ---- |
+| 基本数据类型(数值，布尔，字符串，空值) | lowerCamelCase | lowerCamelCase | UpperCamelCase | lowerCamelCase |     |        |      |
+| 符合数据类型                           | UpperCamelCase | lowerCamelCase | UpperCamelCase | lowerCamelCase |     |        |      |
 
 
 
