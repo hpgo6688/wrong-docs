@@ -1,3 +1,8 @@
+## expo securestore
+
+https://docs.expo.dev/versions/latest/sdk/securestore/
+
+
 ## 敏感数据存储
 
 
