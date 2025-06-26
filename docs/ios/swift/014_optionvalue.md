@@ -38,3 +38,16 @@ var optionalNumber: Int? = nil
    ```
 
 可选值在 Swift 中非常重要，因为它们提供了一种安全处理可能缺失值的方式，避免了许多常见的错误。
+# swift 基本数据类型的optional 都是nil？
+
+
+在 Swift 中，基本数据类型的 `Optional` 默认值是 `nil`，如果你没有对其进行初始化。这表示该变量可能没有值。
+
+例如：
+
+```swift
+var optionalInt: Int?  // 默认为 nil
+var optionalString: String?  // 默认为 nil
+```
+
+如果你不将 `Optional` 类型的变量初始化为某个值，它们的默认状态就是 `nil`，表示没有值。
