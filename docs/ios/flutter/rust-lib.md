@@ -117,3 +117,28 @@ void main() {
 在 Flutter 和 Rust 之间进行调试，优化性能，并根据需要调整接口。
 
 通过这些步骤，你可以使用 `flutter_rust_bridge` 将 Flutter 和 Rust 集成在一起，实现跨平台高性能应用。
+
+
+
+## 链接
+
+https://users.rust-lang.org/t/flutter-rust-app-template-flutter-at-the-front-rust-at-the-back/94622
+
+https://github.com/fzyzcjy/flutter_rust_bridge
+
+https://cjycode.com/flutter_rust_bridge/quickstart
+
+# video
+
+https://www.youtube.com/watch?v=N9fK8rZVK_g&t=49s
+
+https://www.youtube.com/watch?v=FyRo7tvwteQ
+
+
+![alt text](image.png)
+
+
+ios: 替代方案是 cargo lipo
+android: 替代方案是 cargo ndk
+
+https://www.youtube.com/watch?v=URldgdJ0tvk
