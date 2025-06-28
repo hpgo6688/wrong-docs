@@ -1,23 +1,32 @@
-# 使用 Node.js 官方镜像
-FROM node:18
+# 使用 Node 官方镜像作为基础镜像
+FROM node:20-alpine
 
 # 设置工作目录
 WORKDIR /app
 
-# 复制 package.json 和 package-lock.json
-COPY package.json package-lock.json ./
+# 复制项目文件
+COPY . .
 
 # 安装依赖
 RUN npm install
 
-# 复制项目文件
-COPY . .
-
-# 构建 Docusaurus 静态文件
+# 构建静态文件
 RUN npm run build
 
-# 暴露端口
-EXPOSE 3000
+# 使用 nginx 作为生产服务器
+FROM nginx:stable-alpine
 
-# 启动服务
-CMD ["npm", "run", "serve"]
+# 删除默认的 nginx 配置
+RUN rm -rf /usr/share/nginx/html/*
+
+# 从构建阶段复制 Docusaurus 的构建产物
+COPY --from=0 /app/build /usr/share/nginx/html
+
+# 复制 nginx 自定义配置（可选）
+# COPY nginx.conf /etc/nginx/nginx.conf
+
+# 公开端口
+EXPOSE 80
+
+# 启动 nginx
+CMD ["nginx", "-g", "daemon off;"]
