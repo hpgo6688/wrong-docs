@@ -138,3 +138,8 @@ Wujie.mountApp({
 那 ✅ **Wujie 是当前解决这些痛点最成熟的一种轻量微前端框架。**
 
 如果你有免登录 + 跨域 token 的需求，我可以帮你设计一套 Wujie + 主应用代理的认证机制，要不要我继续细化这个方案？
+
+## 微前端解决不了的问题
+
+https://github.com/Tencent/wujie/issues/895
+
