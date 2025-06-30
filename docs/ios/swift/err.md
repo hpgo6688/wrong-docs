@@ -33,3 +33,19 @@ pod init && pod install 之后无法运行
    - 确保 `Build Phases` 中的 `Copy Bundle Resources` 包含所有需要的资源。
 
 如果这些步骤都无法解决问题，可能需要进一步查看 Xcode 的日志，或者在 Stack Overflow 或其他开发者社区中寻求帮助。
+
+
+
+```
+error: 1 duplicate report for Sandbox: rswift(18891) deny(1) file-read-data /Users/haotian.chen/Develop/code/web/ios-app/CoolRProject/Pods/R.swift (in target 'CoolRProject' from project 'CoolRProject')
+error: 3 duplicate reports for Sandbox: rswift(18891) deny(1) file-read-data /Users/haotian.chen/Develop/code/web/ios-app/CoolRProject/Pods/R.swift (in target 'CoolRProject' from project 'CoolRProject')
+============================================
+hello world
+SRCROOT: /Users/haotian.chen/Develop/code/web/ios-app/CoolRProject
+PODS_ROOT: /Users/haotian.chen/Develop/code/web/ios-app/CoolRProject/Pods
+============================================
+Error: Project file at 'file:///Users/haotian.chen/Develop/code/web/ios-app/CoolRProject/CoolRProject.xcodeproj/' could not be parsed, is this a valid Xcode project file ending in *.xcodeproj?
+The file “project.pbxproj” couldn’t be opened because you don’t have permission to view it.
+Usage: rswift <subcommand>
+  See 'rswift --help' for more information.
+```
