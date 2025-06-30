@@ -407,3 +407,12 @@ my-vite-subapp/
 ---
 
 如果你想，我可以为你生成一个最小可运行的 **Wujie + Vite 子应用模版工程**（Vue 或 React 均可），是否需要？
+
+## react api变更影响
+
+
+React 18 引入了新的根 API（createRoot）来替代旧的 ReactDOM.render 方法，这在微前端场景中可能会导致一些兼容性问题。
+
+
+
+![alt text](image.png)
