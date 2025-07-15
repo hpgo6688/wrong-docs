@@ -13,7 +13,7 @@ import {
   NotifierComponents
 } from "@/lib/react-native-notifier/src";
 import { useNavigation } from "expo-router";
-import { useLayoutEffect, useRef, useState } from "react";
+import { useLayoutEffect, useState } from "react";
 import {
   Button,
   Dimensions,
@@ -87,7 +87,6 @@ const CustomComponent = ({ title, description }) => (
 );
 const ToastExample = () => {
   const [visible, setVisible] = useState(false);
-  const notifierRef = useRef<typeof Notifier>(null);
   const navigation = useNavigation();
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -127,14 +126,28 @@ const ToastExample = () => {
           }}
         />
         <Button
-          title="Show Notification Alert"
+          title="Show Notification Alert Success"
           onPress={() =>
             Notifier.showNotification({
               title: "Toast Title",
               description: "This is a custom toast message.",
               Component: NotifierComponents.Alert,
               componentProps: {
-                alertType: "success", // 可选: success, error, warning, info
+                type: "success", // 可选: success, error, warning, info
+              },
+              duration: 3000, // 持续时间
+            })
+          }
+        />
+        <Button
+          title="Show Notification Alert Error"
+          onPress={() =>
+            Notifier.showNotification({
+              title: "Toast Title",
+              description: "This is a custom toast message.",
+              Component: NotifierComponents.Alert,
+              componentProps: {
+                type: "error", // 可选: success, error, warning, info
               },
               duration: 3000, // 持续时间
             })
@@ -182,15 +195,6 @@ const ToastExample = () => {
         >
           <Button title="Close" onPress={() => setVisible(false)} />
           {renderContent()}
-          <Button
-            title="Show Notification"
-            onPress={() =>
-              notifierRef.current?.showNotification({
-                title: "Using refs",
-                Component: CustomComponent,
-              })
-            }
-          />
         </View>
       </Modal>
     </SafeAreaView>
